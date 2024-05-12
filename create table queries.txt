@@ -1,0 +1,206 @@
+CREATE DATABASE BoziDB;
+
+Create TABLE customer_status
+(
+    CSID INT AUTO_INCREMENT PRIMARY KEY,
+    Title varchar(50) NOT NULL
+);
+
+Create TABLE province
+(
+    ProvinceID INT AUTO_INCREMENT PRIMARY KEY,
+    Name varchar(50) NOT NULL
+);
+
+Create TABLE city
+(
+    CityID INT AUTO_INCREMENT PRIMARY KEY,
+    Name varchar(50) NOT NULL,
+    ProvinceID INT NOT NULL,
+    FOREIGN KEY (ProvinceID) REFERENCES province(ProvinceID) On UPDATE CASCADE
+);
+
+CREATE TABLE customer
+(
+    customerID INT AUTO_INCREMENT PRIMARY KEY,
+    mobileNumber varchar(15) NOT NULL UNIQUE,
+    email varchar(50) UNIQUE,
+    firstname varchar(50),
+    lastname varchar(50),
+    lastaccess DATETIME,
+    registerTime DATETIME NOT NULL,
+    CSID INT NOT NULL,
+    ProvinceID INT NOT NULL,
+    CityID INT NOT NULL,
+    FOREIGN KEY (CSID) REFERENCES customer_status(CSID) ON UPDATE CASCADE,
+    FOREIGN KEY (ProvinceID) REFERENCES province(ProvinceID) ON UPDATE CASCADE,
+    FOREIGN KEY (CityID) REFERENCES city(CityID) ON UPDATE CASCADE
+);
+
+CREATE TABLE support
+(
+    supportID INT AUTO_INCREMENT PRIMARY KEY,
+    mobileNumber varchar(15) NOT NULL UNIQUE,
+    email varchar(50) UNIQUE,
+    firstname varchar(50),
+    lastname varchar(50),
+    lastaccess DATETIME,
+    registerTime DATETIME NOT NULL  
+);
+
+CREATE TABLE store_category
+(
+    SCID INT AUTO_INCREMENT PRIMARY KEY,
+    Title varchar(50) NOT NULL   
+);
+
+CREATE TABLE status
+(
+    statusID INT AUTO_INCREMENT PRIMARY KEY,
+    Title varchar(50) NOT NULL
+);
+
+CREATE TABLE store 
+(
+    storeID INT AUTO_INCREMENT PRIMARY KEY,
+    name varchar(50) NOT NULL,
+    description varchar(500),
+    registerNumber varchar(10) NOT NULL,
+    customerID INT NOT NULL,
+    SCID INT NOT NULL,
+    statusID INT NOT NULL,
+    ProvinceID INT NOT NULL,
+    CityID INT NOT NULL,
+    FOREIGN KEY (SCID) REFERENCES store_category(SCID) ON UPDATE CASCADE,
+    FOREIGN KEY (customerID) REFERENCES customer(customerID) ON UPDATE CASCADE,
+    FOREIGN KEY (statusID) REFERENCES status(statusID) ON UPDATE CASCADE,
+    FOREIGN KEY (ProvinceID) REFERENCES province(ProvinceID) ON UPDATE CASCADE,
+    FOREIGN KEY (CityID) REFERENCES city(CityID) ON UPDATE CASCADE
+);
+
+CREATE TABLE support_store_status
+(
+    note varchar(200),
+    supportID INT NOT NULL,
+    storeID INT NOT NULL,
+    statusID INT NOT NULL,
+    createdAt DATETIME NOT NULL,
+    PRIMARY KEY (supportID, storeID, statusID, createdAt),
+    FOREIGN KEY (supportID) REFERENCES support(supportID) ON UPDATE CASCADE,
+    FOREIGN KEY (storeID) REFERENCES store(storeID) ON UPDATE CASCADE,
+    FOREIGN KEY (statusID) REFERENCES status(statusID) ON UPDATE CASCADE
+);
+
+CREATE TABLE ad_category
+(
+    ACID int AUTO_INCREMENT PRIMARY KEY,
+    parentId int,
+    title varchar(50) NOT NULL,
+    isLeaf bool NOT NULL
+);
+
+CREATE TABLE metadata_keys
+(
+    MDKID INT AUTO_INCREMENT PRIMARY KEY,
+    ACID INT NOT NULL,
+    FOREIGN KEY (ACID) REFERENCES ad_category(ACID) ON UPDATE CASCADE ON DELETE CASCADE,
+    metaKeys json NOT NULL
+);
+
+CREATE TABLE ad
+(
+    adID INT AUTO_INCREMENT PRIMARY KEY,
+    title varchar(50) NOT NULL,
+    description varchar(500),
+    price DECIMAL(15, 0) NOT NULL,
+    createdAt DATETIME NOT NULL,
+    updatedAt DATETIME NOT NULL, 
+    meta json,
+    view INT DEFAULT 0,
+    customerID int,
+    storeID int,
+    provinceID int NOT NULL,
+    cityID int NOT NULL,
+    statusID int NOT NULL,
+    ACID int NOT NULL,
+    FOREIGN KEY (customerID) REFERENCES customer(customerID) ON UPDATE CASCADE,
+    FOREIGN KEY (storeID) REFERENCES store(storeID) ON UPDATE CASCADE,
+    FOREIGN KEY (provinceID) REFERENCES province(provinceID) ON UPDATE CASCADE,
+    FOREIGN KEY (cityID) REFERENCES city(cityID) ON UPDATE CASCADE,
+    FOREIGN KEY (statusID) REFERENCES status(statusID) ON UPDATE CASCADE,
+    FOREIGN KEY (ACID) REFERENCES ad_category(ACID) ON UPDATE CASCADE
+
+);
+
+CREATE TABLE ad_pictures
+(
+    APID INT NOT NULL,
+    adID INT NOT NULL,
+    FOREIGN KEY (adID) REFERENCES ad(adID) ON UPDATE CASCADE ON DELETE CASCADE,
+    pictureURL varchar(100) NOT NULL
+);
+
+CREATE TABLE support_ad_status
+(
+    note varchar(200),
+    supportID INT NOT NULL,
+    adID INT NOT NULL,
+    statusID INT NOT NULL,
+    createdAt DATETIME NOT NULL,
+    PRIMARY KEY (supportID, adID, statusID, createdAt),
+    FOREIGN KEY (supportID) REFERENCES support(supportID) ON UPDATE CASCADE,
+    FOREIGN KEY (adID) REFERENCES ad(adID) ON UPDATE CASCADE,
+    FOREIGN KEY (statusID) REFERENCES status(statusID) ON UPDATE CASCADE
+);
+
+CREATE TABLE ad_report_status
+(
+    ARSID INT AUTO_INCREMENT PRIMARY KEY,
+    title varchar(50) NOT NULL
+);
+
+CREATE TABLE ad_report_category
+(
+    ARCID INT AUTO_INCREMENT PRIMARY KEY,
+    title varchar(50) NOT NULL
+);
+
+CREATE TABLE ad_report
+(
+    ARID INT AUTO_INCREMENT PRIMARY KEY,
+    createdAt DATETIME NOT NULL,
+    description varchar(100),
+    ARSID INT NOT NULL,
+    ARCID INT NOT NULL,
+    FOREIGN KEY (ARSID) REFERENCES ad_report_status(ARSID) ON UPDATE CASCADE,
+    FOREIGN KEY (ARCID) REFERENCES ad_report_category(ARCID) ON UPDATE CASCADE
+);
+
+CREATE TABLE support_ad_report
+(
+    supportID INT NOT NULL,
+    ARID INT NOT NULL,
+    PRIMARY KEY (supportID, ARID),
+    FOREIGN KEY (supportID) REFERENCES support(supportID) on UPDATE CASCADE,
+    FOREIGN KEY (ARID) REFERENCES ad_report(ARID) on UPDATE CASCADE
+);
+
+CREATE TABLE customer_ad_report
+(
+    customerID INT NOT NULL,
+    adID INT NOT NULL,
+    ARID INT NOT NULL,
+    PRIMARY KEY (customerID, adID, ARID),
+    FOREIGN KEY (customerID) REFERENCES customer(customerID) on UPDATE CASCADE,
+    FOREIGN KEY (adID) REFERENCES ad(adID) ON UPDATE CASCADE,
+    FOREIGN KEY (ARID) REFERENCES ad_report(ARID) ON UPDATE CASCADE
+);
+
+CREATE TABLE customer_view_ad
+(
+    customerID INT NOT NULL,
+    adID INT NOT NULL,
+    PRIMARY KEY (customerID, adID),
+    FOREIGN KEY (customerID) REFERENCES customer(customerID) ON UPDATE CASCADE,
+    FOREIGN KEY (adID) REFERENCES ad(adID) ON UPDATE CASCADE
+);

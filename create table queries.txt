@@ -1,5 +1,7 @@
 CREATE DATABASE BoziDB;
 
+use BoziDB;
+
 Create TABLE customer_status
 (
     CSID INT AUTO_INCREMENT PRIMARY KEY,

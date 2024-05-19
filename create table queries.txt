@@ -134,6 +134,14 @@ CREATE TABLE ad
 
 );
 
+CREATE TABLE ad_views
+(
+    adID INT,
+    viewCount INT DEFAULT 0,
+    PRIMARY KEY (adID),
+    FOREIGN KEY (adID) REFERENCES ad(adID) ON DELETE CASCADE
+);
+
 CREATE TABLE ad_pictures
 (
     APID INT NOT NULL,

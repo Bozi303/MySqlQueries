@@ -118,7 +118,6 @@ CREATE TABLE ad
     createdAt DATETIME NOT NULL,
     updatedAt DATETIME NOT NULL, 
     meta json,
-    view INT DEFAULT 0,
     customerID int,
     storeID int,
     provinceID int NOT NULL,

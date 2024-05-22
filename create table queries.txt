@@ -32,10 +32,8 @@ CREATE TABLE customer
     lastaccess DATETIME,
     registerTime DATETIME NOT NULL,
     CSID INT NOT NULL,
-    ProvinceID INT NOT NULL,
     CityID INT NOT NULL,
     FOREIGN KEY (CSID) REFERENCES customer_status(CSID) ON UPDATE CASCADE,
-    FOREIGN KEY (ProvinceID) REFERENCES province(ProvinceID) ON UPDATE CASCADE,
     FOREIGN KEY (CityID) REFERENCES city(CityID) ON UPDATE CASCADE
 );
 
@@ -71,12 +69,10 @@ CREATE TABLE store
     customerID INT NOT NULL,
     SCID INT NOT NULL,
     statusID INT NOT NULL,
-    ProvinceID INT NOT NULL,
     CityID INT NOT NULL,
     FOREIGN KEY (SCID) REFERENCES store_category(SCID) ON UPDATE CASCADE,
     FOREIGN KEY (customerID) REFERENCES customer(customerID) ON UPDATE CASCADE,
     FOREIGN KEY (statusID) REFERENCES status(statusID) ON UPDATE CASCADE,
-    FOREIGN KEY (ProvinceID) REFERENCES province(ProvinceID) ON UPDATE CASCADE,
     FOREIGN KEY (CityID) REFERENCES city(CityID) ON UPDATE CASCADE
 );
 
@@ -120,13 +116,11 @@ CREATE TABLE ad
     meta json,
     customerID int,
     storeID int,
-    provinceID int NOT NULL,
     cityID int NOT NULL,
     statusID int NOT NULL,
     ACID int NOT NULL,
     FOREIGN KEY (customerID) REFERENCES customer(customerID) ON UPDATE CASCADE,
     FOREIGN KEY (storeID) REFERENCES store(storeID) ON UPDATE CASCADE,
-    FOREIGN KEY (provinceID) REFERENCES province(provinceID) ON UPDATE CASCADE,
     FOREIGN KEY (cityID) REFERENCES city(cityID) ON UPDATE CASCADE,
     FOREIGN KEY (statusID) REFERENCES status(statusID) ON UPDATE CASCADE,
     FOREIGN KEY (ACID) REFERENCES ad_category(ACID) ON UPDATE CASCADE

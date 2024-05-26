@@ -97,13 +97,15 @@ CREATE TABLE ad_category
     isLeaf bool NOT NULL
 );
 
-CREATE TABLE metadata_keys
+
+CREATE TABLE category_metadata
 (
-    MDKID INT AUTO_INCREMENT PRIMARY KEY,
     ACID INT NOT NULL,
+    metaKey varchar(50) NOT NULL, 
     FOREIGN KEY (ACID) REFERENCES ad_category(ACID) ON UPDATE CASCADE ON DELETE CASCADE,
-    metaKeys json NOT NULL
+    PRIMARY KEY (ACID, metaKey)
 );
+
 
 CREATE TABLE ad
 (
@@ -113,7 +115,6 @@ CREATE TABLE ad
     price DECIMAL(15, 0) NOT NULL,
     createdAt DATETIME NOT NULL,
     updatedAt DATETIME NOT NULL, 
-    meta json,
     customerID int,
     storeID int,
     cityID int NOT NULL,
@@ -125,6 +126,15 @@ CREATE TABLE ad
     FOREIGN KEY (statusID) REFERENCES status(statusID) ON UPDATE CASCADE,
     FOREIGN KEY (ACID) REFERENCES ad_category(ACID) ON UPDATE CASCADE
 
+);
+
+CREATE TABLE ad_meta
+(
+    adID INT NOT NULL,
+    name varchar(50) NOT NULL,
+    value varchar(50) NOT NULL,
+    FOREIGN KEY (adID) REFERENCES ad(adID) ON UPDATE CASCADE ON DELETE CASCADE,
+    PRIMARY KEY (adID, name)
 );
 
 CREATE TABLE ad_views
